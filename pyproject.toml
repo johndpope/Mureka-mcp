@@ -1,0 +1,37 @@
+[project]
+name = "mureka-mcp"
+version = "0.0.11"
+description = "The mcp server of Mureka.ai"
+authors = [
+    { name = "wei.zhang", email = "zhangwei@singularity-ai.com" }
+]
+readme = "README.md"
+classifiers = []
+keywords = [
+    "mureka",
+    "mcp",
+    "music",
+    "song",
+    "instrumental",
+    "aigc",
+    "ai",
+    "generate"
+]
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]>=1.6.0",
+    "sounddevice==0.5.1",
+    "soundfile==0.13.1",
+    "requests==2.31.0"
+]
+
+[project.scripts]
+mureka-mcp = "mureka_mcp.api:main"
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
