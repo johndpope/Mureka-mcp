@@ -2,7 +2,7 @@
 
 <div class="title-block" style="text-align: center;" align="center">
 
-![export](https://raw.githubusercontent.com/SkyworkAI/Mureka-mcp/refs/heads/master/assets/mureka_mcp.svg)
+![export](https://raw.githubusercontent.com/SkyworkAI/Mureka-mcp/refs/heads/master/assets/mureka_mcp.png)
 
 [![Discord Community](https://raw.githubusercontent.com/SkyworkAI/Mureka-mcp/refs/heads/master/assets/discord_mureka.svg)](https://discord.com/invite/nwu9ANqAf5)
 [![Twitter](https://raw.githubusercontent.com/SkyworkAI/Mureka-mcp/refs/heads/master/assets/x_mureka.svg)](https://x.com/Mureka_AI)

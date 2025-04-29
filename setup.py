@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='mureka-mcp',
-    version='0.0.11',
+    version='0.0.12',
     packages=find_packages(exclude=["test_api.py"]),
     include_package_data=True,
     entry_points={
