@@ -73,5 +73,20 @@ Logs when running with Claude Desktop can be found at:
 - **macOS**: `~/Library/Logs/Claude/mcp-server-Mureka.log`
 
 ## Quickstart with Openai agents sdk
+Install Agents SDK
+```
+pip install openai-agents
+```
+Run example: openapi_agents_example/main.py
 
-Coming soon
+Key is required to be filled in: 
+```
+MUREKA_API_KEY = "<insert-your-api-key-here>"
+```
+After running, you can see the composition process in the console
+<div class="title-block" style="text-align: left;">
+<img src="https://raw.githubusercontent.com/SkyworkAI/Mureka-mcp/refs/heads/master/assets/openai_1.jpeg" width="400">
+</div>
+<div class="title-block" style="text-align: left;">
+<img src="https://raw.githubusercontent.com/SkyworkAI/Mureka-mcp/refs/heads/master/assets/openai_2.jpeg" width="400">
+</div>
