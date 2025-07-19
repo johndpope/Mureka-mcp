@@ -1,0 +1,4 @@
+mcp[cli]>=1.6.0
+sounddevice==0.5.1
+soundfile==0.13.1
+requests==2.31.0

@@ -540,8 +540,87 @@ async def complete_upload(upload_id: str, part_ids: list[str] | None = None) -> 
 
 
 @mcp.tool(
-    description="""Upload a complete file to Mureka in one operation. This is a convenience function that handles
-    the entire upload process (create, add parts, complete) for files up to 10MB.
+    description="""Upload a reference file directly to Mureka (simple upload for reference purposes).
+    This is different from the multi-part upload system and is used for reference files up to 10MB.
+    
+    ⚠️ COST WARNING: This tool makes an API call to mureka.ai which may incur costs. Only use when explicitly requested by the user.
+    
+    Args:
+        file_path (str): Path to the file to upload
+        purpose (str): The intended purpose of the uploaded file. Valid values:
+            - 'reference': Audio reference (mp3, m4a). Duration: exactly 30 seconds, excess trimmed.
+            - 'vocal': Vocal reference (mp3, m4a). Duration: 15-30 seconds, excess trimmed.
+            - 'melody': Melody reference (mp3, m4a, mid). Duration: 5-60 seconds, excess trimmed.
+            - 'instrumental': Instrumental reference (mp3, m4a). Duration: exactly 30 seconds, excess trimmed.
+            - 'voice': Voice reference (mp3, m4a). Duration: 5-15 seconds, excess trimmed.
+        
+    Returns:
+        Upload response with file ID and metadata
+    """
+)
+async def upload_reference_file(file_path: str, purpose: str) -> dict:
+    try:
+        if not api_key:
+            raise Exception("API key not found.")
+        
+        # Validate purpose
+        valid_purposes = ['reference', 'vocal', 'melody', 'instrumental', 'voice']
+        if purpose not in valid_purposes:
+            raise Exception(f"Invalid purpose '{purpose}'. Valid values: {', '.join(valid_purposes)}")
+        
+        # Validate file path
+        file_obj = handle_input_file(file_path, audio_content_check=True)
+        
+        # Check file size (max 10MB)
+        file_size = file_obj.stat().st_size
+        max_size = 10 * 1024 * 1024  # 10 MB
+        if file_size > max_size:
+            raise Exception(f"File size ({file_size} bytes) exceeds maximum size of 10MB")
+        
+        # Check file format based on purpose
+        file_ext = file_obj.suffix.lower()
+        if purpose in ['reference', 'vocal', 'instrumental', 'voice']:
+            if file_ext not in ['.mp3', '.m4a']:
+                raise Exception(f"For purpose '{purpose}', only mp3 and m4a formats are supported. Got: {file_ext}")
+        elif purpose == 'melody':
+            if file_ext not in ['.mp3', '.m4a', '.mid']:
+                raise Exception(f"For purpose '{purpose}', only mp3, m4a, and mid formats are supported. Got: {file_ext}")
+        
+        url = f"{api_url}/v1/upload/file"
+        headers = {
+            'Authorization': f'Bearer {api_key}'
+        }
+        
+        # Prepare multipart form data
+        files = {
+            'file': (file_obj.name, open(file_obj, 'rb'), 'application/octet-stream')
+        }
+        data = {
+            'purpose': purpose
+        }
+        
+        # Use requests for multipart form data
+        response = requests.post(url, headers=headers, files=files, data=data, timeout=default_time_out)
+        
+        # Close the file
+        files['file'][1].close()
+        
+        response.raise_for_status()
+        result = response.json()
+        
+        return result
+        
+    except requests.HTTPError as e:
+        raise Exception(f"HTTP request failed: {str(e)}") from e
+    except KeyError as e:
+        raise Exception(f"Failed to parse response: {str(e)}") from e
+    except Exception as e:
+        raise Exception(f"Reference file upload failed: {str(e)}") from e
+
+
+@mcp.tool(
+    description="""Upload a complete file to Mureka using multi-part upload system (for fine-tuning).
+    This handles the entire upload process (create, add parts, complete) for files up to 10MB.
     For larger files, use the individual upload functions.
     
     ⚠️ COST WARNING: This tool makes an API call to mureka.ai which may incur costs. Only use when explicitly requested by the user.
@@ -570,8 +649,8 @@ async def upload_file(file_path: str, purpose: str = "fine-tuning", upload_name:
         if upload_name is None:
             upload_name = file_obj.name
             
-        # Step 1: Create upload
-        upload_result = await create_upload(upload_name, purpose, file_size)
+        # Step 1: Create upload (don't pass file_size to avoid byte validation issues)
+        upload_result = await create_upload(upload_name, purpose)
         upload_id = upload_result.get('id')
         
         if not upload_id:

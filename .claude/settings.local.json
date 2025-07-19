@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__mureka-mcp__create_upload",
+      "mcp__mureka-mcp__complete_upload",
+      "mcp__mureka-mcp__add_upload_part"
+    ],
+    "deny": []
+  }
+}
